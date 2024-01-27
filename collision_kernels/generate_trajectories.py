@@ -11,6 +11,7 @@ def generate_trajectories(
     r_mesh=0.1,
     floor_r=5,
     floor_h=5,
+    t_max=None,
 ):
     """
     Generate trajectories of particles in a simulation.
@@ -32,6 +33,9 @@ def generate_trajectories(
     floor_h : int, optional
         Vertical distance from initial condition to big ball centre.
 
+    t_max : float, optional
+        Max simulation time. (Remember dimensionless!)
+
     Returns
     -------
     np.array
@@ -40,29 +44,25 @@ def generate_trajectories(
 
     """
 
-    # TODO: RW 2024-01-27
-    # TODO: Uniform along the radius is a terible strategy
-    initial_x = np.tile(np.arange(0, floor_r, r_mesh), trials)
-
-    initial_y = np.zeros_like(initial_x)
-    initial_z = np.zeros_like(initial_x) - floor_h
-    initial = np.vstack((initial_x, initial_y, initial_z)).T
-
-    def diffusion(q):
-        return ((1 / peclet) ** 0.5) * jnp.eye(3)
+    initial = construct_initial_condition(floor_r,floor_h,r_mesh,trials)
 
     collision_data = simulate_until_collides(
         drift=stokes_around_unit_sphere,
-        noise=diffusion,
+        noise=diffusion_function(peclet=peclet),
         initial=initial,
         small_r=small_r,
         floor_h=floor_h,
+        t_max=t_max        
     )
 
-    ret = np.vstack((initial_x, collision_data["ball_hit"])).T
+    ret = np.vstack((initial[:,0], collision_data["ball_hit"])).T
 
     return ret[collision_data["something_hit"]]
 
+def diffusion_function(peclet):
+    def diffusion(q):
+        return ((1 / peclet) ** 0.5) * jnp.eye(3)
+    return diffusion
 
 def stokes_around_unit_sphere(q):
     """
@@ -88,10 +88,23 @@ def stokes_around_unit_sphere(q):
     return (xx_scale * xx_tensor + id_scale * id_tensor) @ u_inf
 
 
-def simulate_until_collides(drift, noise, initial, small_r, floor_h):
+def construct_initial_condition(floor_r,floor_h,r_mesh,trials):
+    # TODO: RW 2024-01-27
+    # TODO: Uniform along the radius is a terible strategy
+
+    initial_x = np.tile(np.arange(0, floor_r, r_mesh), trials)
+
+    initial_y = np.zeros_like(initial_x)
+    initial_z = np.zeros_like(initial_x) - floor_h
+    return np.vstack((initial_x, initial_y, initial_z)).T
+
+def simulate_until_collides(drift, noise, initial, small_r, floor_h, t_max=None):
     """
     Simulate trajectories until they collide with roof or ball
     """
+
+    if t_max == None:
+        t_max = 5 * floor_h
 
     # TODO: RW 2024-01-27
     # TODO: Better implementation possible: compute part of trajectory
@@ -102,7 +115,7 @@ def simulate_until_collides(drift, noise, initial, small_r, floor_h):
         drift,
         noise,
         x0=initial,
-        tmax=20.0,
+        tmax=t_max,
     )
 
     solver = pychastic.sde_solver.SDESolver(dt=0.01)
@@ -116,7 +129,12 @@ def simulate_until_collides(drift, noise, initial, small_r, floor_h):
 
     something_hit = np.logical_or(ball_hit, roof_hit)
 
-    return {"ball_hit": ball_hit, "roof_hit": roof_hit, "something_hit": something_hit}
+    return {
+        "ball_hit": ball_hit,
+        "roof_hit": roof_hit,
+        "something_hit": something_hit,
+        "trajectories": trajectories, #for debug only
+    }
 
 
 if __name__ == "__main__":
