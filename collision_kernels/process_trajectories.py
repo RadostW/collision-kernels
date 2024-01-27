@@ -19,11 +19,12 @@ def effective_radius(trajectory_array):
 
     # Compute outcome as E[2\pi r hit(r)]
     effecive_area = np.mean(2 * np.pi * trajectory_array[:, 0] * trajectory_array[:, 1])
-    effective_radius = (effecive_area / np.pi)**0.5
+    effective_radius = (effecive_area / np.pi) ** 0.5
 
     return effective_radius
 
-def sherwood(trajectory_array):
+
+def sherwood(trajectory_array, peclet=1, R_eff=1.05):
     """
     Compute Sherwood number from collision data
 
@@ -38,4 +39,6 @@ def sherwood(trajectory_array):
         Sherwood number
 
     """
-    raise NotImplementedError
+    r_eff = effective_radius(trajectory_array)
+
+    return ((r_eff**2) / (R_eff**2)) * peclet / (4 * np.pi)
