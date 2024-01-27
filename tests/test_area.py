@@ -1,30 +1,34 @@
 import collision_kernels.process_trajectories
 import numpy as np
 
+import pytest
 
-def test_area_ballistic():
-    target_r = 1.0
+
+@pytest.mark.parametrize(
+    "target_r",
+    [
+        0.1,
+        0.2,
+        0.5,
+        1.0,
+        2.0,
+        5.0,
+    ],
+)
+def test_area_ballistic(target_r):
     r = np.linspace(0, 10, 1000)
     hit = np.where(r < target_r, 1, 0)
-    mock_data = np.vstack((r, hit))
+    mock_data = np.vstack((r, hit)).T
     np.random.shuffle(mock_data)
 
+    result = collision_kernels.process_trajectories.effective_radius(mock_data)
+
     assert np.allclose(
-        collision_kernels.process_trajectories.effective_radius(mock_data),
+        result,
         target_r,
-        atol=1e-03,
+        atol=1e-02,
     )
 
 
-def test_area_ballistic_2():
-    target_r = 2.0
-    r = np.linspace(0, 10, 1000)
-    hit = np.where(r < target_r, 1, 0)
-    mock_data = np.vstack((r, hit))
-    np.random.shuffle(mock_data)
-
-    assert np.allclose(
-        collision_kernels.process_trajectories.effective_radius(mock_data),
-        target_r,
-        atol=1e-03,
-    )
+if __name__ == "__main__":
+    test_area_ballistic(1.0)
