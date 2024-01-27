@@ -22,8 +22,7 @@ def visualise_trajectories():
         noise=collision_kernels.generate_trajectories.diffusion_function(peclet=peclet),
         initial=initial,
         small_r=small_r,
-        floor_h=floor_h,
-        t_max=t_max,
+        floor_h=floor_h,        
     )
 
     trajectories = collision_data["trajectories"]
