@@ -9,7 +9,7 @@ def generate_trajectories(
     small_r=0.05,
     trials=100,
     r_mesh=0.1,
-    floor_r=5,
+    floor_r=None,
     floor_h=5,
     t_max=None,
 ):
@@ -44,7 +44,10 @@ def generate_trajectories(
 
     """
 
-    initial = construct_initial_condition(floor_r,floor_h,r_mesh,trials)
+    if floor_r == None:
+        floor_r = max((6 * floor_h) / (3 + 2 * peclet), 1)
+
+    initial = construct_initial_condition(floor_r, floor_h, r_mesh, trials)
 
     collision_data = simulate_until_collides(
         drift=stokes_around_unit_sphere,
@@ -52,17 +55,20 @@ def generate_trajectories(
         initial=initial,
         small_r=small_r,
         floor_h=floor_h,
-        t_max=t_max        
+        t_max=t_max,
     )
 
-    ret = np.vstack((initial[:,0], collision_data["ball_hit"])).T
+    ret = np.vstack((initial[:, 0], collision_data["ball_hit"])).T
 
     return ret[collision_data["something_hit"]]
+
 
 def diffusion_function(peclet):
     def diffusion(q):
         return ((1 / peclet) ** 0.5) * jnp.eye(3)
+
     return diffusion
+
 
 def stokes_around_unit_sphere(q):
     """
@@ -88,7 +94,7 @@ def stokes_around_unit_sphere(q):
     return (xx_scale * xx_tensor + id_scale * id_tensor) @ u_inf
 
 
-def construct_initial_condition(floor_r,floor_h,r_mesh,trials):
+def construct_initial_condition(floor_r, floor_h, r_mesh, trials):
     # TODO: RW 2024-01-27
     # TODO: Uniform along the radius is a terible strategy
 
@@ -97,6 +103,7 @@ def construct_initial_condition(floor_r,floor_h,r_mesh,trials):
     initial_y = np.zeros_like(initial_x)
     initial_z = np.zeros_like(initial_x) - floor_h
     return np.vstack((initial_x, initial_y, initial_z)).T
+
 
 def simulate_until_collides(drift, noise, initial, small_r, floor_h, t_max=None):
     """
@@ -133,7 +140,7 @@ def simulate_until_collides(drift, noise, initial, small_r, floor_h, t_max=None)
         "ball_hit": ball_hit,
         "roof_hit": roof_hit,
         "something_hit": something_hit,
-        "trajectories": trajectories, #for debug only
+        "trajectories": trajectories,  # for debug only
     }
 
 
