@@ -58,15 +58,11 @@ def generate_trajectories(
         first coord and outcome 1 - ball hit, 0 - ball missed.
 
     """
-    noise = jnp.sqrt(1 / peclet) * jnp.eye(3)
+    def noise(q) = jnp.sqrt(1 / peclet) * jnp.eye(3)
 
     whole_time = time.time()
 
     for r in np.linspace(0, floor_r, r_rows):
-        start_time = time.time()
-
-        n = 0
-        n_good = []
 
         tocat = jnp.array([1, 0, 0])[jnp.newaxis, :] * jnp.linspace(r, r, trials)[:, jnp.newaxis] + jnp.array([0, 0, floor_h])
 
