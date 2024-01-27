@@ -7,7 +7,7 @@ import time
 def generate_trajectories(
     peclet=1,
     small_r=0.05,
-    trials=3,
+    trials=100,
     r_mesh=0.1,
     floor_r=5,
     floor_h=5,
