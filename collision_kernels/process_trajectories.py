@@ -24,7 +24,7 @@ def effective_radius(trajectory_array):
     return effective_radius
 
 
-def sherwood(trajectory_array, peclet=1, R_eff=1.05):
+def sherwood(trajectory_array, peclet=1, big_R_eff=1.05):
     """
     Compute Sherwood number from collision data
 
@@ -41,4 +41,4 @@ def sherwood(trajectory_array, peclet=1, R_eff=1.05):
     """
     r_eff = effective_radius(trajectory_array)
 
-    return ((r_eff**2) / (R_eff**2)) * peclet / (4 * np.pi)
+    return ((r_eff**2) / (big_R_eff**2)) * peclet / (4)
