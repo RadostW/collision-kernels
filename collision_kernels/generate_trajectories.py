@@ -1,3 +1,8 @@
+import pychastic
+import jax.numpy as jnp
+import numpy as np
+import time
+
 big_r = 1
 u_inf = jnp.array([0, 0, 1])
 
@@ -23,15 +28,9 @@ def drift(q):
     return (xx_scale * xx_tensor + id_scale * id_tensor) @ u_inf
 
 
-def noise(q):
-    """
-    Return diffusion coefficient from location
-    """
-
-    return jnp.sqrt(1 / Pe) * jnp.eye(3)
-
-
-def generate_trajectories(peclet=1, small_r=0.05, trials=1000, floor_r=10, floor_h=10):
+def generate_trajectories(
+    peclet=1, small_r=0.05, trials=1000, floor_r=10, r_rows=10, floor_h=10
+):
     """
     Generate trajectories of particles in a simulation.
 
@@ -59,39 +58,26 @@ def generate_trajectories(peclet=1, small_r=0.05, trials=1000, floor_r=10, floor
         first coord and outcome 1 - ball hit, 0 - ball missed.
 
     """
+    noise = jnp.sqrt(1 / peclet) * jnp.eye(3)
 
     whole_time = time.time()
 
+    for r in np.linspace(0, floor_r, r_rows):
+        start_time = time.time()
 
-for x in np.linspace(0, X_Max, X_rows):
-    start_time = time.time()
+        n = 0
+        n_good = []
 
-    poses = np.zeros((1, 3))
+        tocat = jnp.array([1, 0, 0])[jnp.newaxis, :] * jnp.linspace(r, r, trials)[:, jnp.newaxis] + jnp.array([0, 0, floor_h])
 
-    n = 0
-    n_good = []
-    for z in np.linspace(Z_Min, Z_Max, Z_rows):
-        tocat = jnp.array([1, 0, 0])[jnp.newaxis, :] * jnp.linspace(x, x, trials)[
-            :, jnp.newaxis
-        ] + jnp.array([0, 0, z])
-        if z**2 + x**2 > 1:
-            poses = np.concatenate((poses, tocat), axis=0)
-            check[m, n, 0] = x
-            check[m, n, 1] = z
-            n_good = n_good + [n]
-        n += 1
+        problem = pychastic.sde_problem.SDEProblem(
+            drift,
+            noise,
+            x0=jnpposes,
+            tmax=20.0,
+        )
 
-    poses = poses[1:]
-    jnpposes = jnp.array(poses)
-
-    problem = pychastic.sde_problem.SDEProblem(
-        drift,
-        noise,
-        x0=jnpposes,
-        tmax=20.0,
-    )
-
-    solver = pychastic.sde_solver.SDESolver(dt=0.01)
-    trajectory = solver.solve_many(problem, None, progress_bar=None)
+        solver = pychastic.sde_solver.SDESolver(dt=0.01)
+        trajectory = solver.solve_many(problem, None, progress_bar=None)
 
     pass
