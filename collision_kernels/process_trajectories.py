@@ -1,3 +1,5 @@
+import numpy as np
+
 def effective_radius(trajectory_array):
     """
     Compute effective area of the particle from collision data
@@ -14,4 +16,5 @@ def effective_radius(trajectory_array):
 
     """
 
-    pass
+    # Compute outcome as E[r hit]
+    return np.mean(trajectory_array[:,0]*trajectory_array[:,1])
