@@ -1,16 +1,7 @@
-import collision_kernels.generate_trajectories
-import collision_kernels.process_trajectories
-
+import collision_kernels.collision_kernels
 import numpy as np
-
 import pytest
 
-def sherwood_from_peclet(pe):
-        
-    single_pe_trajectories = collision_kernels.generate_trajectories.generate_trajectories(peclet=pe)
-    sh_number = collision_kernels.process_trajectories.sherwood(single_pe_trajectories)
-
-    return sh_number
 
 @pytest.mark.parametrize(
     "pe,true_sh",
@@ -22,11 +13,11 @@ def sherwood_from_peclet(pe):
 )
 def test_sherwood_from_peclet(pe,true_sh):
 
-    test_sh = sherwood_from_peclet(pe)
+    test_sh = collision_kernels.collision_kernels.sherwood_from_peclet(pe)
 
     print(f'{test_sh=} {true_sh=}')
 
-    assert test_sh == pytest.approx(true_sh, abs=0.5)
+    assert test_sh == pytest.approx(true_sh, abs=0.01)
 
 
 if __name__ == "__main__":
