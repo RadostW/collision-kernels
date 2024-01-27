@@ -4,6 +4,7 @@ import numpy as np
 def effective_radius(trajectory_array):
     """
     Compute effective area of the particle from collision data
+    ASSUMES UNIFORM SAMPLING!
 
     Parameters
     ----------
@@ -18,13 +19,19 @@ def effective_radius(trajectory_array):
     """
 
     # Compute outcome as E[2\pi r hit(r)]
-    effecive_area = np.mean(2 * np.pi * trajectory_array[:, 0] * trajectory_array[:, 1])
-    effective_radius = (effecive_area / np.pi) ** 0.5
+    radial_distance = trajectory_array[:, 0]
+    is_hit = trajectory_array[:, 1]
+
+    effective_area = np.max(radial_distance) * np.mean(
+        2 * np.pi * radial_distance * is_hit
+    )
+
+    effective_radius = (effective_area / np.pi) ** 0.5
 
     return effective_radius
 
 
-def sherwood(trajectory_array, peclet=1, big_R_eff=1.05):
+def sherwood(trajectory_array, peclet=1, small_r=0.05):
     """
     Compute Sherwood number from collision data
 
@@ -41,4 +48,4 @@ def sherwood(trajectory_array, peclet=1, big_R_eff=1.05):
     """
     r_eff = effective_radius(trajectory_array)
 
-    return ((r_eff**2) / (big_R_eff**2)) * peclet / (4)
+    return (peclet / 4) * ((r_eff / (small_r + 1)) ** 2)
