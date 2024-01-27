@@ -15,8 +15,6 @@ def test_sherwood_from_peclet(pe,true_sh):
 
     test_sh = collision_kernels.collision_kernels.sherwood_from_peclet(pe)
 
-    print(f'{test_sh=} {true_sh=}')
-
     assert test_sh == pytest.approx(true_sh, abs=0.01)
 
 
