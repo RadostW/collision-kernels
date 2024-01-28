@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 
 def visualise_trajectories():
-    peclet = 100
-    floor_r = 3
+    peclet = 10
+    floor_r = 5
     floor_h = 10
-    r_mesh = 0.5
+    r_mesh = 0.2
     trials = 10
     small_r = 1.0
     display_traj = 20
@@ -25,6 +25,8 @@ def visualise_trajectories():
         floor_h=floor_h,        
     )
 
+    plt.figure(figsize=(12, 10))
+
     trajectories = collision_data["trajectories"]
     for i in range(display_traj):
         r = (trajectories[i, :, 0] ** 2 + trajectories[i, :, 1] ** 2) ** 0.5
@@ -38,8 +40,8 @@ def visualise_trajectories():
             color = "#a22"
 
         plt.plot(r, z, color=color)
-        plt.scatter(r[-1], z[-1], s=10, color="k", zorder=5)
-        plt.scatter(r[0], z[0], s=10, color="k", zorder=5)
+        plt.scatter(r[-1], z[-1], s=8, color="k", zorder=5)
+        plt.scatter(r[0], z[0], s=8, color="k", zorder=5)
 
     circle = plt.Circle((0, 0), 1, color="#222", fill=False)
     plt.gca().add_artist(circle)
@@ -47,9 +49,9 @@ def visualise_trajectories():
     plt.gca().add_artist(circle)
 
     plt.gca().set_aspect("equal")
+    plt.axis([0, 5, -10.5, 10])
 
-    plt.show()
-
+    plt.savefig("traj_visualize.svg", format='svg')
 
 if __name__ == "__main__":
     visualise_trajectories()
