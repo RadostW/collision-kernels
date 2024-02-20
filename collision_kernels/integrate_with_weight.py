@@ -118,7 +118,7 @@ def _integrate_on_interval(weight, sampler, absolute_tolerance, max_step_size):
             else:
                 break
 
-        print(f"Transformed: {x:5.4f} {weight(x)} {mean_value:5.2f} {total_n}")
+        print(f"Transformed: {x:5.4f} {weight(x)} {mean_value:5.2f} {total_n} {_absolute_tolerance:e}")
 
         return weight(x) * mean_value
 
