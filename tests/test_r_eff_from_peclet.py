@@ -24,15 +24,15 @@ def reff_from_peclet(
 
     return effective_radius
 
+if __name__ == "__main__":
+    peclet_values=np.logspace(0,4,4)
 
-peclet_values=np.logspace(0,4,4)
+    sherwood_values=[]
+    for Pe in tqdm.tqdm(peclet_values):
+        sherwood_values += [reff_from_peclet(Pe)]
 
-sherwood_values=[]
-for Pe in tqdm.tqdm(peclet_values):
-    sherwood_values += [reff_from_peclet(Pe)]
+    print(list(zip(peclet_values,sherwood_values)))
 
-print(list(zip(peclet_values,sherwood_values)))
+    plt.loglog(peclet_values, sherwood_values, marker='o', linestyle='None', markersize=8, color='blue')
 
-plt.loglog(peclet_values, sherwood_values, marker='o', linestyle='None', markersize=8, color='blue')
-
-plt.show()
+    plt.show()

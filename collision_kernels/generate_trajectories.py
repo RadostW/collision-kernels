@@ -63,6 +63,60 @@ def generate_trajectories(
     return ret[collision_data["something_hit"]]
 
 
+def calculate_probability(
+    x_position,
+    trials,
+    peclet,
+    small_r=0.05,
+    floor_h=5,
+    t_max=None,
+):
+    """
+    Generate trajectories of particles in a simulation at a single position and calculate hitting propability
+
+    Parameters
+    ----------
+
+    x_position: float
+        position to calculate probability
+
+    trials : int
+        Number of trajectories to calculate pobability.
+
+    peclet : float
+        Peclet number defined as R u / D.
+
+    floor_r : int, optional
+        Radius of the floor of trial cyllinder.
+
+    floor_h : int, optional
+        Vertical distance from initial condition to big ball centre.
+
+    t_max : float, optional
+        Max simulation time. (Remember dimensionless!)
+
+    Returns
+    -------
+    propability of hitting , amout of sucsesfull runs
+
+    """
+
+    initial = construct_initial_trials_at_x(floor_h, x_position, trials)
+
+    collision_data = simulate_until_collides(
+        drift=stokes_around_unit_sphere,
+        noise=diffusion_function(peclet=peclet),
+        initial=initial,
+        small_r=small_r,
+        floor_h=floor_h,
+        t_max=t_max,
+    )
+
+    return np.sum(collision_data["ball_hit"]) / np.sum(
+        collision_data["something_hit"]
+    ), np.sum(collision_data["something_hit"])
+
+
 def diffusion_function(peclet):
     def diffusion(q):
         return ((1 / peclet) ** 0.5) * jnp.eye(3)
@@ -99,6 +153,17 @@ def construct_initial_condition(floor_r, floor_h, r_mesh, trials):
     # TODO: Uniform along the radius is a terible strategy
 
     initial_x = np.tile(np.arange(0, floor_r, r_mesh), trials)
+
+    initial_y = np.zeros_like(initial_x)
+    initial_z = np.zeros_like(initial_x) - floor_h
+    return np.vstack((initial_x, initial_y, initial_z)).T
+
+
+def construct_initial_trials_at_x(floor_h, trials, x_position):
+    # TODO: RW 2024-01-27
+    # TODO: Uniform along the radius is a terible strategy
+
+    initial_x = x_position * np.ones(trials)
 
     initial_y = np.zeros_like(initial_x)
     initial_z = np.zeros_like(initial_x) - floor_h
