@@ -23,10 +23,15 @@ def test_acrivos_vs_simpson(peclet):
     def acrivos(peclet):
         return (1/2)*(1+(1+2*peclet)**(1/3))
     
+    small_r = 0.05
+    def area_from_acrivos(peclet):
+        return ((4*np.pi*(1+small_r)**2 )*acrivos(peclet)/peclet)
+    
     true_sherwood = acrivos(peclet)
+    true_area = area_from_acrivos(peclet)
 
     batch_size = 1000
-    absolute_tolerance = acrivos(peclet) * 0.1
+    absolute_tolerance = true_area * 0.1
     max_step_size = 0.5
 
     def weight(x):
