@@ -112,9 +112,10 @@ def calculate_probability(
         t_max=t_max,
     )
 
-    return np.sum(collision_data["ball_hit"]) / np.sum(
-        collision_data["something_hit"]
-    ), np.sum(collision_data["something_hit"])
+    return (
+        np.sum(collision_data["ball_hit"]) / np.sum(collision_data["something_hit"]),
+        np.sum(collision_data["something_hit"]),
+    )
 
 
 def diffusion_function(peclet):

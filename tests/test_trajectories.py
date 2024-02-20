@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 
 
 def visualise_trajectories():
-    peclet = 10
-    floor_r = 5
-    floor_h = 10
-    r_mesh = 0.2
+    peclet = 3423
+    floor_r = 0.3
+    floor_h = 5
+    r_mesh = 0.01
     trials = 10
-    small_r = 1.0
-    display_traj = 20
+    small_r = 0.01
+    display_traj = 200
 
     initial = collision_kernels.generate_trajectories.construct_initial_condition(
         floor_r=floor_r, floor_h=floor_h, r_mesh=r_mesh, trials=trials
@@ -25,7 +25,7 @@ def visualise_trajectories():
         floor_h=floor_h,        
     )
 
-    plt.figure(figsize=(12, 10))
+    #plt.figure(figsize=(12, 10))
 
     trajectories = collision_data["trajectories"]
     for i in range(display_traj):
@@ -51,7 +51,8 @@ def visualise_trajectories():
     plt.gca().set_aspect("equal")
     plt.axis([0, 5, -10.5, 10])
 
-    plt.savefig("traj_visualize.svg", format='svg')
+    # plt.savefig("traj_visualize.svg", format='svg')
+    plt.show()
 
 if __name__ == "__main__":
     visualise_trajectories()
