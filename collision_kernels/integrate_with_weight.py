@@ -73,7 +73,7 @@ def _integrate_on_interval(weight, sampler, absolute_tolerance, max_step_size):
 
     """
 
-    initial_n = 1000
+    initial_n = 100
     max_retries = 10
 
     def fun(x, _absolute_tolerance):
@@ -118,7 +118,7 @@ def _integrate_on_interval(weight, sampler, absolute_tolerance, max_step_size):
             else:
                 break
 
-        print(f"Transformed: {x:5.4f} {weight(x)} {mean_value:5.2f} {total_n} {_absolute_tolerance:e}")
+        print(f"Transformed: {x:5.4f} {weight(x):5.4f} {mean_value:5.4f} {total_n} {_absolute_tolerance:5.4e}")
 
         return weight(x) * mean_value
 

@@ -67,7 +67,7 @@ def calculate_probability(
     x_position,
     trials,
     peclet,
-    small_r=0.05,
+    small_r,
     floor_h=5,
     t_max=None,
 ):
@@ -101,7 +101,7 @@ def calculate_probability(
 
     """
 
-    initial = construct_initial_trials_at_x(floor_h, x_position, trials)
+    initial = construct_initial_trials_at_x(floor_h = floor_h, x_position = x_position, trials = trials)
 
     collision_data = simulate_until_collides(
         drift=stokes_around_unit_sphere,
@@ -111,6 +111,8 @@ def calculate_probability(
         floor_h=floor_h,
         t_max=t_max,
     )
+
+    # print(collision_data)
 
     return (
         np.sum(collision_data["ball_hit"]) / np.sum(collision_data["something_hit"]),
@@ -177,7 +179,7 @@ def simulate_until_collides(drift, noise, initial, small_r, floor_h, t_max=None)
     """
 
     if t_max == None:
-        t_max = 5 * floor_h
+        t_max = 10 * floor_h
 
     # TODO: RW 2024-01-27
     # TODO: Better implementation possible: compute part of trajectory
