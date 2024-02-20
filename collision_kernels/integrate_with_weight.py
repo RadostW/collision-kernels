@@ -73,7 +73,7 @@ def _integrate_on_interval(weight, sampler, absolute_tolerance, max_step_size):
 
     """
 
-    initial_n = 10000
+    initial_n = 1000
     max_retries = 10
 
     def fun(x, _absolute_tolerance):

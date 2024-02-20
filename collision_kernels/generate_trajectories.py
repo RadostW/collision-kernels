@@ -159,7 +159,7 @@ def construct_initial_condition(floor_r, floor_h, r_mesh, trials):
     return np.vstack((initial_x, initial_y, initial_z)).T
 
 
-def construct_initial_trials_at_x(floor_h, trials, x_position):
+def construct_initial_trials_at_x(floor_h, x_position, trials):
     # TODO: RW 2024-01-27
     # TODO: Uniform along the radius is a terible strategy
 

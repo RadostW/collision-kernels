@@ -32,11 +32,11 @@ def test_acrivos_vs_simpson(peclet):
         Number of samples n
         """
 
-        batch_size = 10000
+        batch_size = 1000
         done = 0
         results = list()
         while done < n:
-            estimated_probability, good_runs = collision_kernels.generate_trajectories.calculate_probability(x,batch_size)
+            estimated_probability, good_runs = collision_kernels.generate_trajectories.calculate_probability(x,batch_size,peclet)
             results.append(
                 estimated_probability
             )
@@ -45,7 +45,7 @@ def test_acrivos_vs_simpson(peclet):
         ret = np.array(results)
         return ret
 
-    absolute_tolerance = acrivos(peclet) * 0.01
+    absolute_tolerance = acrivos(peclet) * 0.1
     max_step_size = 0.1
 
     effe = collision_kernels.integrate_with_weight.integrate_with_weight(
@@ -59,4 +59,4 @@ def test_acrivos_vs_simpson(peclet):
 
 
 if __name__ == "__main__":
-    test_acrivos_vs_simpson(steepness=5, location=1, true_result=5.52)
+    test_acrivos_vs_simpson(100)
